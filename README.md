@@ -4,7 +4,7 @@
 
 This is the first version released of `next-gen-scrapy`. This repo of was built to allow users to scrape all of the regular season and postseason pass charts from NextGenStats from 2017 onwards, and extract all passes -  completions, incompletions, interceptions, and touchdowns - from the pass charts. The file `pass_and_game_data.csv` contains the final version of all of the data after all of the Python and R scripts are run, including Game ID, home team, away team, week, season, player, type of pass, and pass location for the 2017 season, and up to week 16 of the 2018 season. This repo will be maintained regularly for bug fixes and new, exciting features and updates! Thank you to Sam Ventura, Kostas Pelechrinis, and Ron Yurko for all your help and guidance with this project!
 
-### Example Cleaned Pass Chart (with axes) - Nick Foles in Super Bowl LII
+### Example Cleaned Pass Chart (with axes in yards) - Nick Foles in Super Bowl LII
 
 ![Nick Foles in Super Bowl LII](https://raw.githubusercontent.com/sarahmallepalle/next-gen-scrapy/master/axes.jpg)
 
