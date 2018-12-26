@@ -179,7 +179,7 @@ def touchdowns(image, n):
         coords.columns = ['x', 'y','label']
         clusters = Counter(labels).most_common(n)
         td_labels = np.array([clust[0] for clust in clusters])
-        km_coords = coords.loc[coords['label'].isin (td_labels)]
+        km_coords = coords.loc[coords['label'].isin(td_labels)]
         km = map(list, zip(km_coords.iloc[:,0], km_coords.iloc[:,1]))
 
         kmeans = KMeans(n_clusters=n, random_state=0).fit(km)
