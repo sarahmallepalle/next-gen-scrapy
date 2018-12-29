@@ -1,3 +1,17 @@
+"""
+Author: Sarah Mallepalle
+
+For every pass chart image, extract only the trapezoidal image of the field, 
+undistort the field by turning the trapezoid into a rectangle, remove the sideline labels, 
+and save the new image to the folder 'Cleaned_Pass_Charts'.
+
+Folder format: ./Cleaned_Pass_Charts/[team]/[season]/[week]/{[images], [data]}/[last_name]_[first_name]_[positon].{jpeg, txt}
+Example: 
+	Image path = ./Cleaned_Pass_Charts/philadelphia-eagles/2017/super-bowl/images/Foles_Nick_QB.jpeg
+	Data path = ./Cleaned_Pass_Charts/philadelphia-eagles/2017/super-bowl/data/Foles_Nick_QB.txt
+
+"""
+
 import cv2
 import os
 from undistort_field import *
