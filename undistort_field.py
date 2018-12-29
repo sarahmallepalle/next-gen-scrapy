@@ -1,3 +1,11 @@
+"""
+Author: Sarah Mallepalle
+
+For a single pass chart image in 'Pass_Charts', extract only the trapezoidal image of the field, 
+undistort the field by turning the trapezoid into a rectangle, remove the sideline labels, 
+and save the new image to the folder 'Cleaned_Pass_Charts'.
+"""
+
 import cv2
 import os
 from skimage import data, color, img_as_ubyte, io
@@ -13,6 +21,14 @@ import numpy as np
 
 
 def get_top(image):
+	"""
+	Function to get the pixel location of the top of the trapezoidal field.
+	
+	Input:
+		image: image from the folder 'Pass_Charts'
+	Return:
+		top_left: location of the top left of the trapezoidal field
+	"""
 	frame = cv2.imread(image, 0)
 	ret, img = cv2.threshold(frame, 40, 255, cv2.THRESH_BINARY_INV)
 
@@ -38,6 +54,18 @@ def get_top(image):
 	return top_left
 
 def make_grey_border(image):
+	"""
+	Function to add a grey border to the left and right of the trapezoidal field, 
+	in order to undistort the trapezoid.
+	
+	Input:
+		image: image from the folder 'Pass_Charts'
+	Return:
+		top_left: location of the top left of the trapezoidal field
+		bordersize: width of the border in pixels added to the image
+		border: numpy.ndarray representation of input image with border
+		
+	"""
 	top_left = get_top(image)
 	im = cv2.imread(image)
 	row, col = im.shape[:2]
@@ -59,6 +87,14 @@ def make_grey_border(image):
 	return top_left, bordersize, border
 
 def undistort_field(image):
+	"""
+	Function to undistort the field by turning the trapezoid field image into a rectangle.
+	
+	Input:
+		image: image from the folder 'Pass_Charts'
+	Return:
+		im_out: undistorted image of the field turned into a rectangle
+	"""
 
 	tl, bs, border_image = make_grey_border(image)
 
@@ -78,6 +114,15 @@ def undistort_field(image):
 	return im_out
 
 def clean_field_70(image):
+	"""
+	Function that removes the sidelines of an undistorted pass chart field image,
+	if the field image shows +70 yards from the line of scrimmage.
+	
+	Input:
+		image: undistorted image, im_out
+	Return:
+		img: cleaned undistorted image, without sidelines
+	"""
 	grey_color = (86,96,108)
 	LOS1 = ((18,587), (86, 601))
 	LOS2 = ((1308, 601), (1374,587))
@@ -122,6 +167,15 @@ def clean_field_70(image):
 	return img
 
 def clean_field_50(image):
+	"""
+	Function that removes the sidelines of an undistorted pass chart field image,
+	if the field image shows +50 yards from the line of scrimmage.
+	
+	Input:
+		image: undistorted image, im_out
+	Return:
+		img: cleaned undistorted image, without sidelines
+	"""
 	grey_color = (86,96,108)
 	LOS1 = ((20, 562), (84, 578))
 	LOS2 = ((1340, 562), (1278, 578))
@@ -160,6 +214,9 @@ def clean_field_50(image):
 	return img
 
 def clean_field(image):
+	"""
+	Wrapper function for clean_field_50 and clean_field_70. 
+	"""
 	u_img = undistort_field(image)
 	if u_img is None: 
 		return None
