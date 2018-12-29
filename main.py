@@ -1,3 +1,11 @@
+"""
+Author: Sarah Mallepalle
+
+Main file to extract all pass locations from all images in the folder 
+'Cleaned_Pass_Charts', and write player, game, and pass information to 
+the file 'pass_locations.csv'
+"""
+
 import os
 from undistort_field import *
 from pass_detection import *
@@ -6,6 +14,10 @@ import scipy.misc
 import pandas as pd
 
 def get_pass_data(data_file): 
+	"""
+	Extract the number of complete passes, incomplete passes, touchdowns, and interceptions 
+	from a pass chart. 
+	"""
 	with open(data_file) as _file: 
 		data = json.load(_file)
 		_file.close()
@@ -17,6 +29,10 @@ def get_pass_data(data_file):
 	return (n_completions, n_touchdowns, n_interceptions, n_incompletes)
 
 def get_image(folder, data_file):
+	"""
+	If cleaned image exists, return the file path to the image, 
+	otherwise return none.
+	"""
 	images_path = os.sep.join(folder.split(os.sep)[:-1]) + os.sep + "images" 
 	image_file = images_path + os.sep + data_file.split(".")[0] + ".jpeg"
 	if not os.path.exists(image_file):
@@ -25,6 +41,9 @@ def get_image(folder, data_file):
 		return image_file
 
 def get_game_data(data_file):
+	"""
+	Extract player name, team, and game ID from the data corresponding to a pass chart image.
+	"""	
 	with open(data_file) as _file: 
 		data = json.load(_file)
 		_file.close()
@@ -34,6 +53,9 @@ def get_game_data(data_file):
 	return (name, team, game_id)
 
 def write_pass_locations(image, data, passes):
+	"""
+	Write player, team, and game information, and locations of all passes to a .csv file.
+	"""
 	(n_com, n_td, n_int, n_inc) = get_pass_data(data)
 	(name, team, game_id) = get_game_data(data)
 	n_total = n_com + n_td + n_int + n_inc
