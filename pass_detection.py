@@ -1,3 +1,11 @@
+"""
+Authors: Sarah Mallepalle and Kostas Pelechrinis
+
+For every pass chart image in 'Cleaned_Pass_Charts', extract the locations of complete passes, 
+incomplete passes, interceptions, and touchdowns relative to the line of scrimmage.
+"""
+
+
 import cv2
 import numpy as np
 from PIL import Image
@@ -11,8 +19,21 @@ import os
 import scipy.misc
 
 def map_pass_locations(centers, col, pass_type):
+    """
+    Function to map pixel location of passes to real field location of passes,
+    with the y-axis at the center of the field, and the x-axis at the line of scrimmage.
+    All images show either 55 yards or 75 yards in front of the line of scrimmage,
+    10 yards behind the line of scrimmage, and a standard field width of 53.33 yards.
+    
+    Input:
+        centers: list of pass locations in pixels
+        col: width of image from which the pass locations were extracted
+        pass_type: "COMPLETE", "INCOMPLETE", "INTERCEPTION", or "TOUCHDOWN"
+    Return:
+        pass_locations: Pandas DataFrame of all pass locations on the field and pass type
+    """
     sideline = 40 # pixels
-    width = 53.33 # standard width of football field
+    width = 53.33
     center_x = col/2
 
     if col > 1370:
@@ -41,6 +62,19 @@ def map_pass_locations(centers, col, pass_type):
     return pass_locations
 
 def completions(image, n):
+    """
+    Function to obtain the locations of the complete passes from the image
+    of the pass chart using k-means.
+    
+    Input: 
+        image: image from the folder 'Cleaned_Pass_Charts'
+        n: number of incompletions, from the corresponding data of the image
+    Return:
+        call to map_pass_locations:
+            centers: list of pass locations in pixels
+            col: width of image from which the pass locations were extracted
+            pass_type: "COMPLETE"
+    """
 
     image = cv2.imread(image)
     row, col = image.shape[0:2]
@@ -69,6 +103,21 @@ def completions(image, n):
     return map_pass_locations(centers, col, "COMPLETE")
 
 def incompletions(image, n):
+    """
+    Function to obtain the locations of the incomplete passes from the image
+    of the pass chart using k-means, and DBSCAN to account for discrepancies
+    in given number of incompletions from the data vs. number of incompletions
+    shown on the field.
+    
+    Input: 
+        image: image from the folder 'Cleaned_Pass_Charts'
+        n: number of incompletions, from the corresponding data of the image
+    Return:
+        call to map_pass_locations:
+            centers: list of pass locations in pixels
+            col: width of image from which the pass locations were extracted
+            pass_type: "INCOMPLETE"
+    """
 
     image = cv2.imread(image)
     row, col = image.shape[0:2]
@@ -103,6 +152,19 @@ def incompletions(image, n):
     return map_pass_locations(centers, col, "INCOMPLETE")
  
 def interceptions(image, n):
+    """
+    Function to obtain the locations of the intercepted passes from the image
+    of the pass chart using k-means.
+    
+    Input: 
+        image: image from the folder 'Cleaned_Pass_Charts'
+        n: number of interceptions, from the corresponding data of the image
+    Return:
+        call to map_pass_locations:
+            centers: list of pass locations in pixels
+            col: width of image from which the pass locations were extracted
+            pass_type: "INTERCEPTION"
+    """
 
     image = cv2.imread(image)
     row, col = image.shape[0:2]
@@ -110,7 +172,7 @@ def interceptions(image, n):
     # Convert BGR to HSV
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    # # define range of red in HSV
+    # define range of red in HSV with two masks
     mask1 = cv2.inRange(hsv, (0,50,20), (5,255,255))
     mask2 = cv2.inRange(hsv, (175,50,20), (180,255,255))
 
@@ -131,6 +193,21 @@ def interceptions(image, n):
     return map_pass_locations(centers, col, "INTERCEPTION")
 
 def touchdowns(image, n):
+    """
+    Function to obtain the locations of the touchdown passes from the image
+    of the pass chart using k-means, and DBSCAN to account for difficulties in 
+    extracting touchdown passes, since they have the are the same color as both the line of 
+    scrimmage and the attached touchdown trajectory lines. 
+    
+    Input: 
+        image: image from the folder 'Cleaned_Pass_Charts'
+        n: number of toucndowns, from the corresponding data of the image
+    Return:
+        call to map_pass_locations:
+            centers: list of pass locations in pixels
+            col: width of image from which the pass locations were extracted
+            pass_type: "TOUCHDOWN"
+    """
 
     im = Image.open(image)
     pix = im.load()
