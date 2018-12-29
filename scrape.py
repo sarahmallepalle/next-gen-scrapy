@@ -1,7 +1,14 @@
 """
-Use BeautifulSoup to scrape https://nextgenstats.nfl.com/ for all available extra-large (1200 x 1200)
-pass chart images from the 2017 & 2018 NFL seasons, and save the charts to the folder 'Pass_Charts'.
 Author: Sarah Mallepalle
+
+Use BeautifulSoup to scrape https://nextgenstats.nfl.com/ for all available extra-large (1200 x 1200)
+pass chart images and corresponding pass chart data from the 2017 & 2018 NFL seasons, 
+and save the image and its corresponding data to the folder 'Pass_Charts'.
+
+Folder format: ./Pass_Charts/[team]/[season]/[week]/{[images], [data]}/[last_name]_[first_name]_[positon].{jpeg, txt}
+Example: 
+	Image path = ./Pass_Charts/philadelphia-eagles/2017/super-bowl/images/Foles_Nick_QB.jpeg
+	Data path = ./Pass_Charts/philadelphia-eagles/2017/super-bowl/data/Foles_Nick_QB.txt
 """
 
 import requests 
