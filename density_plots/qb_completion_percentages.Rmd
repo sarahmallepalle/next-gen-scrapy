@@ -1,0 +1,101 @@
+---
+title: "2018 QB vs. League Average Completion Percentages"
+subtitle: "For Quarterbacks with at least 100 Complete Passes in Regular Season"
+author: "Sarah Mallepalle"
+date: "1/11/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+```{r, include=FALSE, warning = FALSE, message = FALSE}
+library(MASS)
+library(tidyverse)
+library(mgcv)
+
+# Load all the data and make data frames
+pass_df <- read.csv("../pass_and_game_data.csv")
+passes <- subset(pass_df, !(is.na(x)) & type == "reg")
+
+passes <- passes %>%
+  mutate(is_complete = 
+           ifelse(pass_type %in% c("COMPLETE", "TOUCHDOWN"), 1, 0),
+         is_incomplete = 
+           ifelse(pass_type %in% c("COMPLETE", "TOUCHDOWN"), 0, 1)
+         )
+
+complete <- subset(passes, pass_type %in% c("COMPLETE", "TOUCHDOWN"))
+incomplete <- subset(passes, pass_type %in% c("INCOMPLETE", "INTERCEPTION"))
+
+passes_18 <- subset(passes, season == 2018)
+complete_18 <- subset(complete, season == 2018)
+incomplete_18 <- subset(incomplete, season == 2018)
+
+qb_names<- names(which(sort(table(complete_18$name)) >= 100))
+```
+
+
+```{r}
+# Ron's code to predict completion percentages over the entire field
+league_complete_model <- gam(is_complete ~ s(x, y), data = passes_18)
+
+a <- seq(-30, 30, length.out = 30--30+1)
+b <- seq(-10, 55, length.out = 55--10+1)
+
+predict_data <- data.frame(x = c(outer(a, b * 0 + 1)), y = c(outer(a * 0 + 1, b)))
+
+league_complete_preds <- predict(league_complete_model, predict_data, type = "response")
+predict_data <- predict_data %>% 
+  mutate(complete_prob = league_complete_preds)
+```
+
+```{r, fig.align='center', fig.height = 8}
+# Plot league wide completion percentages
+ggplot(predict_data) +
+  geom_tile(aes(x = x, y = y, fill = complete_prob)) +
+  scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "white", midpoint = 0.5, limits=c(0, 1)) +
+  coord_fixed() +
+  theme_bw() +
+  labs(title = "League-Wide Completion Percentage",
+       x = "Field Width", y = "Field Length",
+       fill = "Probability")
+```
+
+
+```{r, fig.align='center'}
+# Completion percentages vs. league average for every quarterback with >= 100 completions
+
+for (qb in qb_names) {
+  qb_df <- subset(passes_18, name == qb)
+  team <- qb_df[1,]$team
+  cap <- paste("Total Passes =", nrow(qb_df))
+  
+  qb_complete_model <- gam(is_complete ~ s(x, y), data = qb_df)
+  qb_complete_preds <- predict(qb_complete_model, predict_data, type = "response")
+    
+  gg_completion_prop <- ggplot(predict_data) +
+    geom_tile(aes(x = x, y = y, fill = qb_complete_preds)) +
+    scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "white", midpoint = 0.5) +
+    coord_fixed() +
+    theme_bw() +
+    labs(x = "Field Width", y = "Field Length",
+       fill = "Probability") +
+    ggtitle(paste("Completion Percentage:\n", qb, " (", team,  ") in 2018", sep = "")) 
+  print(gg_completion_prop)
+  
+  gg_league_compare <- ggplot(predict_data) +
+    geom_tile(aes(x = x, y = y, fill = (qb_complete_preds - league_complete_preds))) +
+    scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "white", midpoint = 0, limits=c(-1, 1)) +
+    coord_fixed() +
+    theme_bw() +
+    labs(x = "Field Width", y = "Field Length",
+       fill = "Probability",
+       caption = cap) +
+    ggtitle(paste("Completion Percentage vs. League Average:\n",  qb, " (", team,  ") in 2018", sep = "")) 
+  print(gg_league_compare)
+}
+```
+
