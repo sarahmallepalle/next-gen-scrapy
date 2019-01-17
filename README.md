@@ -21,8 +21,8 @@ Column | Definition
 `week` | Week of game
 `name` | Pass chart's player first and last name 
 `pass_type` | COMPLETE, INCOMPLETE, INTERCEPTION, or TOUCHDOWN
-`x` | x-coordinate of field location in yards; -26.66 <= x <= 26.66, with x = 0 as the vertical axis in the center of the field. 
-`y` | y-coordinate of field location in yards; -10 <= y <= 75, with y = 0 as the horizontal axis at the Line of Scrimmage
+`x_coord` | x-coordinate of field location in yards; -26.66 <= x <= 26.66, with x = 0 as the vertical axis in the center of the field. 
+`y_coord` | y-coordinate of field location in yards; -10 <= y <= 75, with y = 0 as the horizontal axis at the Line of Scrimmage
 `type` | Regular ("reg") or postseason ("post") game
 `home_team` | Home team of game
 `away_team` | Away team of game
