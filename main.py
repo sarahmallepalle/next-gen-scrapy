@@ -50,31 +50,32 @@ def get_game_data(data_file):
 	name = data["firstName"] + " " + data["lastName"]
 	team = data["team"]
 	game_id = data["gameId"]
-	return (name, team, game_id)
+	week = data_file.split(os.sep)[-3]
+	return (name, team, game_id, week)
 
 def write_pass_locations(image, data, passes):
 	"""
 	Write player, team, and game information, and locations of all passes to a .csv file.
 	"""
 	(n_com, n_td, n_int, n_inc) = get_pass_data(data)
-	(name, team, game_id) = get_game_data(data)
+	(name, team, game_id, week) = get_game_data(data)
 	n_total = n_com + n_td + n_int + n_inc
 
 	pass_cols = ["pass_type", "x", "y"]
-	game_cols = ["game_id", "team", "name"]
+	game_cols = ["game_id", "team", "week", "name"]
 	pass_df = pd.DataFrame(columns = pass_cols)
 
 	if (image is None): 
-		rows_com = pd.DataFrame([["COMPLETE", np.NaN, np.NaN]]*n_com, 
+		rows_com = pd.DataFrame([["COMPLETE", None, None]]*n_com, 
 			columns = pass_cols)
-		rows_td = pd.DataFrame([["TOUCHDOWN", np.NaN, np.NaN]]*n_td, 
+		rows_td = pd.DataFrame([["TOUCHDOWN", None, None]]*n_td, 
 			columns = pass_cols)
-		rows_int = pd.DataFrame([["INTERCEPTION", np.NaN, np.NaN]]*n_int, 
+		rows_int = pd.DataFrame([["INTERCEPTION", None, None]]*n_int, 
 			columns = pass_cols)
-		rows_inc = pd.DataFrame([["INCOMPLETE", np.NaN, np.NaN]]*n_inc, 
+		rows_inc = pd.DataFrame([["INCOMPLETE", None, None]]*n_inc, 
 			columns = pass_cols)
 		pass_df = pass_df.append([rows_com, rows_td, rows_int, rows_inc])
-		game_df = pd.DataFrame([[game_id, team, name]]*pass_df.shape[0], 
+		game_df = pd.DataFrame([[game_id, team, week, name]]*pass_df.shape[0], 
 			columns = game_cols)
 		df = pd.concat([game_df, pass_df.reset_index(drop=True)], axis=1)
 		passes = passes.append(df)
@@ -96,7 +97,7 @@ def write_pass_locations(image, data, passes):
 		rows_inc = incompletions(image, n_inc)
 		pass_df = pass_df.append(rows_inc)
 
-	game_df = pd.DataFrame([[game_id, team, name]]*pass_df.shape[0], 
+	game_df = pd.DataFrame([[game_id, team, week, name]]*pass_df.shape[0], 
 		columns = game_cols)
 
 	df = pd.concat([game_df, pass_df.reset_index(drop=True)], axis=1)
@@ -107,7 +108,7 @@ def write_pass_locations(image, data, passes):
 if __name__ == '__main__':
 
 	clean_path = "Cleaned_Pass_Charts"
-	passes = pd.DataFrame(columns = ["game_id", "team", "name", "pass_type", "x", "y"])
+	passes = pd.DataFrame(columns = ["game_id", "team", "week", "name", "pass_type", "x", "y"])
 
 	pass_chart_folders = [folder[0] for folder in os.walk(clean_path)]
 	data_folders = [folder for folder in pass_chart_folders if folder.split(os.sep)[-1] == "data"]
