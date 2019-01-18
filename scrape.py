@@ -67,7 +67,7 @@ for team in teams:
 			URL = "https://nextgenstats.nfl.com/charts/list/pass/" + team + "/" + season + "/" + week
 			r = requests.get(URL)
 
-			soup = BeautifulSoup(r.content, "lxml")
+			soup = BeautifulSoup(r.content, "html.parser")
 
 			script = soup.find_all("script", text=pattern)
 
