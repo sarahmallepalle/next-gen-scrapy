@@ -6,7 +6,7 @@ This is the first version released of `next-gen-scrapy`. This repo of was built 
 
 The pass charts are scraped from the NFL's official Next Gen Stats website, https://nextgenstats.nfl.com/charts/list/pass. After obtaining all of the pass chart images from the website, for every pass chart, the field is then undistorted, and all pass locations on the field relative to the line of scrimmage are extracted in (x,y) coordinate format. 
 
-The file `pass_and_game_data.csv` is the final version of all pass location data for the 2017 regular season and postseason, and the 2018 regular season. After all Python and R scripts are run, for every available pass chart, the data contains Game ID, home team, away team, week, season, player, type of pass, and pass location from the line of scrimmage. This repo will be maintained regularly for bug fixes and new, exciting features and updates - including wide receiver route locations coming soon! Thank you to Sam Ventura, Kostas Pelechrinis, and Ron Yurko for all your help and guidance with this project!
+The file `pass_and_game_data.csv` is the final version of all pass location data for the 2017 and 2018 regular seasons and postseasons. After all Python and R scripts are run, for every available pass chart, the data contains Game ID, home team, away team, week, season, player, type of pass, and pass location from the line of scrimmage. This repo will be maintained regularly for bug fixes and new, exciting features and updates - including wide receiver route locations coming soon! Thank you to Sam Ventura, Kostas Pelechrinis, and Ron Yurko for all your help and guidance with this project!
 
 ### Example Undistorted Pass Chart (with axes in yards) - Nick Foles in Super Bowl LII
 
